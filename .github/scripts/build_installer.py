@@ -70,7 +70,7 @@ def prepare_deployment_files() -> None:
         os.makedirs(os.path.join(SITE_DIR, "bin", env["id"]), exist_ok=True)
 
     # Copy web installer files (favicon and html)
-    shutil.copy(os.path.join(WEB_INSTALLER_SRC, "led-rails.html"), SITE_DIR)
+    shutil.copy(os.path.join(WEB_INSTALLER_SRC, "index.html"), SITE_DIR)
     shutil.copy(os.path.join(WEB_INSTALLER_SRC, "favicon.png"), SITE_DIR)
 
     # Copy firmware binaries and create manifest.json
