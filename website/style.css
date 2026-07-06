@@ -1,0 +1,44 @@
+@import url("/assets/vars.css");
+body {
+    background-color: var(--color-bg);
+    color: var(--color-secondary);
+    font-family: var(--font-b);
+    background-image: url("/assets/circuit.png");
+    background-size: 20em;
+    max-height: 100vh;
+    overflow: scroll;
+}
+h1 {
+    color: var(--color-primary);
+    font-family: var(--font-a);
+}
+main {
+    padding: 2em;
+    padding-top: 1em;
+    margin: 5em 0;
+    width: 40em;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: var(--color-bg);
+    overflow-y: scroll;
+}
+.text-primary {
+    color: var(--color-primary);
+    font-family: var(--font-a);
+}
+a {
+    color: var(--color-secondary);
+}
+.map_tile {
+    background-color: var(--color-bg-secondary);
+    padding: 1em;
+    border-radius: 1em;
+    width: 10em;
+    transition: ease-in-out 50ms;
+}.map_tile:hover {
+    transform: scale(1.05);
+}
+#maps_container {
+    display: flex;
+    gap: 1.5em;
+}

@@ -1,0 +1,16 @@
+:root {
+    --color-bg-secondary: #333;
+    --color-bg: #222;
+    --color-primary: #2f64e1;
+    --color-secondary: #ddd;
+    --font-a: "GothamRounded";
+    --font-b: "GothamXNarrow";
+}
+@font-face {
+    font-family: "GothamRounded";
+    src: url("/assets/gothamrnd_medium.woff2");
+}
+@font-face {
+    font-family: "GothamXNarrow";
+    src: url("/assets/Gotham XNarrow Medium.woff2");
+}
