@@ -1,6 +1,6 @@
 const board_id = new URLSearchParams(window.location.search).get("board_id") || "hki-ltm";
 
-const model_path = (window.location.hostname == "ltm.hekinav.dev") ? "" : "/assets/"
+const model_path = (window.location.hostname == "ltm.hekinav.dev") ? "ltm.storage.hekinav.dev/" : "/assets/"
 
 document.querySelector("model-viewer").setAttribute("src",`${model_path}${board_id}.glb`)
 
