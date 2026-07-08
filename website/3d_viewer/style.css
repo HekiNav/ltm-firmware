@@ -1,0 +1,33 @@
+@import url("/assets/vars.css");
+
+body {
+    height: 100vh;
+    margin: 0;
+}
+
+model-viewer {
+    width: 100%;
+    height: 100%;
+    background-color: #111;
+}
+
+.map-selector {
+    opacity: 0.5;
+    background-color: var(--color-bg);
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 1em;
+    transition: 100ms ease-in-out;
+    border-radius: 1em;
+    margin: 1em;
+}
+
+h1 {
+    color: var(--color-secondary);
+    margin: 0;
+}
+
+.map-selector:hover {
+    opacity: 1;
+}

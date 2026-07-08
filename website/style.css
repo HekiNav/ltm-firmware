@@ -1,17 +1,11 @@
 @import url("/assets/vars.css");
 body {
-    background-color: var(--color-bg);
-    color: var(--color-secondary);
-    font-family: var(--font-b);
     background-image: url("/assets/circuit.png");
     background-size: 20em;
     max-height: 100vh;
     overflow: scroll;
 }
-h1 {
-    color: var(--color-primary);
-    font-family: var(--font-a);
-}
+
 main {
     padding: 2em;
     padding-top: 1em;
@@ -22,19 +16,15 @@ main {
     background-color: var(--color-bg);
     overflow-y: scroll;
 }
-.text-primary {
-    color: var(--color-primary);
-    font-family: var(--font-a);
-}
-a {
-    color: var(--color-secondary);
-}
 .map_tile {
     background-color: var(--color-bg-secondary);
     padding: 1em;
     border-radius: 1em;
-    width: 10em;
+    width: 30vw;
     transition: ease-in-out 50ms;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
 }.map_tile:hover {
     transform: scale(1.05);
 }

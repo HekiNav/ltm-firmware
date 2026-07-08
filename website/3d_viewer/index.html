@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hekinav Live Train Map Setup</title>
+    <meta name="description" content="Easily update and configure Wi-Fi for your Live Train Map">
+    <meta property="og:title" content="Hekinav Live Train Map Setup" />
+    <meta property="og:site_name" content="Hekinav Live Train Map Setup" />
+    <meta property="og:type" content="website" />
+    <meta property="og:description" content="Easily update and configure Wi-Fi for your Live Train Map" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Hekinav Live Train Map Setup" />
+    <meta name="twitter:description" content="Easily update and configure Wi-Fi for your Live Train Map" />
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <model-viewer alt="" src="" shadow-intensity="1" camera-controls touch-action="pan-y"></model-viewer>
+    <div class="map-selector">
+        <h1>3D viewer</h1>
+        <a href="./?board_id=hki-ltm"><button id="hki-ltm" class="board-select">Show Helsinki LTM</button></a>
+        <a href="./?board_id=fin-ltm"><button id="fin-ltm" class="board-select">Show Finland LTM</button></a>
+        <br>
+        <br>
+        <a href="/">Back to front page</a>
+    </div>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.3.1/model-viewer.min.js"></script>
+    <script src="main.js"></script>
+</body>

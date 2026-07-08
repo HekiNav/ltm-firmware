@@ -215,6 +215,9 @@
             <p>Wi-Fi setup and updates for your Live Train Map.</p>
         </header>
         <main>
+            <div>
+                <a href="/">Back to front page</a>
+            </div>
             <div id="flasher">
                 <ol class="instructions">
                     <li>Plug your map into a USB port on your computer using a usb cable.
@@ -276,7 +279,7 @@
             if (version === 'fin-ltm_100') {
                 manifestPath = 'bin/fin-ltm_100/manifest.json';
                 document.getElementById('btn-fin-ltm_100').classList.add('selected');
-            } else if (version === 'hki-ltm_100') {
+            } else {
                 manifestPath = 'bin/hki-ltm_100/manifest.json';
                 document.getElementById('btn-hki-ltm_100').classList.add('selected');
             }
@@ -287,7 +290,9 @@
 
         function checkSupported() {
             if (document.getElementById('inst').hasAttribute('install-unsupported')) unsupported();
-            else selectVersion('hki-ltm_100');
+            else {
+                selectVersion(new URLSearchParams(window.location.search).get("board_id"))
+            }
         }
 
         function unsupported() {
@@ -647,7 +652,6 @@
 
             observer.observe(document.body, { childList: true, subtree: true });
         }
-
         initDialogCustomizations([
             { selector: 'ewt-no-port-picked-dialog', customize: customizeNoPortPickedDialog },
             { selector: 'ewt-install-dialog', customize: customizeInstallDialog }
