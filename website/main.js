@@ -23,7 +23,7 @@ const maps_config = [
 ]
 
 window.addEventListener("scroll", (e) => {
-    body.style.backgroundPositionY = `${window.scrollY / 3}px`
+    body.style.backgroundPositionY = `${window.scrollY / 1.5}px`
 })
 
 window.addEventListener("DOMContentLoaded", () => {

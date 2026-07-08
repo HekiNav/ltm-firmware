@@ -9,10 +9,8 @@ body {
 main {
     padding: 2em;
     padding-top: 1em;
-    margin: 5em 0;
+    margin: 8em auto 5em auto;
     width: 40em;
-    margin-left: auto;
-    margin-right: auto;
     background-color: var(--color-bg);
     overflow-y: scroll;
 }
@@ -20,7 +18,7 @@ main {
     background-color: var(--color-bg-secondary);
     padding: 1em;
     border-radius: 1em;
-    width: 30vw;
+    width: 30em;
     transition: ease-in-out 50ms;
     display: flex;
     align-items: center;

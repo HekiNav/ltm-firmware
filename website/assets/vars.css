@@ -19,6 +19,7 @@ body {
     background-color: var(--color-bg);
     color: var(--color-secondary);
     font-family: var(--font-b);
+    margin: 0;
 }
 
 h1 {
@@ -42,4 +43,37 @@ button {
 }
 a {
     color: var(--color-secondary);
+    text-decoration: none;
+}
+
+nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--color-bg-secondary);
+    font-size: 1em;
+}
+nav * {
+    color: var(--color-secondary) !important;
+    text-decoration: none !important;
+}
+nav ul {
+    display: flex;
+    margin: 0;
+    padding: 1em;
+}
+nav li {
+    list-style: none;
+    margin: auto 0 .1em 1em;
+    font-family: var(--font-b);
+}
+nav li:first-child {
+    font-family: var(--font-a);
+    font-size: 1.2em;
+    margin: 0;
+}
+
+*[hidden] {
+    display: none !important;
 }

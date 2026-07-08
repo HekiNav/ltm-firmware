@@ -16,8 +16,9 @@
     <link rel="icon" type="image/png" href="/assets/favicon.png">
     <script type="module" src="https://unpkg.com/esp-web-tools@10.2.1/dist/web/install-button.js?module"></script>
     <style>
+        @import url("/assets/vars.css");
         body {
-            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, sans-serif;
+            font-family: var(--font-b), system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, sans-serif;
             background: #222;
             margin: 0;
             padding: 0;
@@ -124,7 +125,7 @@
             padding: 8px 0;
             margin: 10px 0;
             width: 230px;
-            font-family: Verdana, Helvetica, sans-serif;
+            font-family: var(--font-a), Arial, Helvetica, sans-serif;
             font-size: 19px;
             background-color: #09f;
             color: #fff;
@@ -209,6 +210,11 @@
 </head>
 
 <body onload="checkSupported()">
+    <nav>
+        <ul>
+        </ul>
+        <script src="/assets/navbar.js"></script>
+    </nav>
     <div class="content">
         <header>
             <h1>Hekinav Live Train Map Setup</h1>
