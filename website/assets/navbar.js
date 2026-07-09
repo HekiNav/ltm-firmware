@@ -1,7 +1,5 @@
 const nav = document.querySelector("nav")
 
-console.log(nav)
-
 const nav_items = [
     {
         text: "Hekinav Live Train Maps",
@@ -14,6 +12,10 @@ const nav_items = [
     {
         text: "3D Viewer",
         path: "/3d_viewer/"
+    },
+    {
+        text: "Web Simulator",
+        path: "/simulator/"
     }
 ]
 

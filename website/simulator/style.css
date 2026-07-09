@@ -1,0 +1,50 @@
+@import url("/assets/vars.css");
+
+body {
+    height: 100vh;
+    margin: 0;
+}
+
+.map-selector {
+    background-color: var(--color-bg);
+    position: absolute;
+    right: 0;
+    top: 3.5em;
+    padding: 1em;
+    border-radius: 1em;
+    margin: 1em;
+}
+
+h1 {
+    color: var(--color-secondary);
+    margin: 0;
+}
+
+#svg_container {
+    padding: 5em 1em 1em 1em;
+    height: calc(100vh - 6em);
+    background-color: #111;
+}
+svg {
+    height: 100%;
+    width: 100%;
+}
+
+
+rect.green {
+    fill: #0f0;
+}
+
+rect.red {
+    fill: #f00;
+}
+
+rect.blink {
+    animation: blink 400ms infinite step-start;
+}
+
+@keyframes blink {
+    50% {
+        fill: #000;
+    }
+}

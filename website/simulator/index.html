@@ -4,15 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Viewer | Hekinav Live Train Map</title>
-    <meta name="description" content="View 3D models of the Hekinav Train maps">
-    <meta property="og:title" content="3D Viewer | Hekinav Live Train Map" />
-    <meta property="og:site_name" content="3D Viewer | Hekinav Live Train Map" />
+    <title>Web Simulator | Hekinav Live Train Map</title>
+    <meta name="description" content="Experience the Live Train Maps in your browser">
+    <meta property="og:title" content="Web Simulator | Hekinav Live Train Map" />
+    <meta property="og:site_name" content="Web Simulator | Hekinav Live Train Map" />
     <meta property="og:type" content="website" />
-    <meta property="og:description" content="View 3D models of the Hekinav Train maps" />
+    <meta property="og:description" content="Experience the Live Train Maps in your browser" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="3D Viewer | Hekinav Live Train Map" />
-    <meta name="twitter:description" content="View 3D models of the Hekinav Train maps" />
+    <meta name="twitter:title" content="Web Simulator | Hekinav Live Train Map" />
+    <meta name="twitter:description" content="Experience the Live Train Maps in your browser" />
     <link rel="icon" type="image/png" href="/assets/favicon.png">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -23,15 +23,11 @@
         </ul>
         <script src="/assets/navbar.js"></script>
     </nav>
-    <model-viewer alt="" src="" shadow-intensity="1" camera-controls touch-action="pan-y"></model-viewer>
-    <div class="spinner" id="loading">
-        <div class="spinner-box">
-        <img src="/assets/loading.svg" alt="loading...">
-        <div style="margin-top: .5em;">Loading...</div>
-    </div>
+    <div id="svg_container">
+        
     </div>
     <div class="map-selector">
-        <h1>3D viewer</h1>
+        <h1>Web simulator</h1>
         <a href="./?board_id=hki-ltm"><button id="hki-ltm" class="board-select">Show Helsinki LTM</button></a>
         <a href="./?board_id=fin-ltm"><button id="fin-ltm" class="board-select">Show Finland LTM</button></a>
         <br>
