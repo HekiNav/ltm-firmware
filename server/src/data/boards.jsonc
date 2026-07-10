@@ -3,22 +3,82 @@
         "id": "fin-ltm",
         "name": "Finland Live Train Map",
         "desc": "Live LED train map of Finland. Focused on passenger IC routes.",
-        "versions": ["100"],
+        "versions": [
+            "100"
+        ],
         "available": true,
         "modes": [
             {
                 "id": "route",
                 "name": "IC train route",
                 "colors": [
-                    ["HKI-TKU","HKI-TUS"],
-                    ["ROI-HKI","HKI-KJÄ"],
-                    ["HKI-TPE"]
+                    [],
+                    [
+                        "TPE-TKU",
+                        "TPE-TUS",
+                        "HKI-TPE",
+                        "HKI-KV",
+                        "OL-ROI",
+                        "SK-ÄHT",
+                        "SK-JY",
+                        "SK-VS",
+                        "KUO-OL"
+                    ],
+                    [
+                        "HKI-KUO",
+                        "HKI-VS",
+                        "TKU-KUO",
+                        "TPE-JY",
+                        "TPE-KUO",
+                        "HKI-JNS",
+                        "HKI-IMR"
+                    ],
+                    [
+                        "HKI-KAJ",
+                        "HKI-PM",
+                        "TPE-PRI",
+                        "OL-HPA"
+                    ],
+                    [
+                        "HKI-KUO",
+                        "HKI-TKU",
+                        "HKI-TUS",
+                        "SK-OL"
+                    ], 
+                    [
+                        "TPE-KEU",
+                        "*PYO"
+                    ],
+                    [
+                        "HKI-OL",
+                        "SL-PAR"
+                    ],
+                    [
+                        "PM-JNS",
+                        "HKI-JY",
+                        "HKI-KOK"
+                    ],
+                    [
+                        "TPE-RMA",
+                        "SK-VS",
+                        "TPE-JY"
+                    ],
+                    [
+                        "JNS-NRM",
+                        "YV-ILM",
+                        "HKI-PRI"
+                    ]
                 ],
-                "filters" : [
+                "filters": [
                     {
                         "type": "train_type",
-                        "allow": false,
-                        "list": ["HL","HV","SAA","W"]
+                        "allow": true,
+                        "list": [
+                            "IC",
+                            "S",
+                            "PYO",
+                            "MUS"
+                        ]
                     }
                 ]
             },
@@ -26,14 +86,25 @@
                 "id": "length",
                 "name": "Train length",
                 "colors": [
-                    [0,100],
-                    [100,200]
+                    [
+                        0,
+                        100
+                    ],
+                    [
+                        100,
+                        200
+                    ]
                 ],
-                "filters" : [
+                "filters": [
                     {
                         "type": "train_type",
                         "allow": false,
-                        "list": ["HL","HV","SAA","W"]
+                        "list": [
+                            "HL",
+                            "HV",
+                            "SAA",
+                            "W"
+                        ]
                     }
                 ]
             }
@@ -43,29 +114,62 @@
         "id": "hki-ltm",
         "name": "Helsinki Region Live Train Map",
         "desc": "Live LED train map of the Helsinki region commuter train network.",
-        "versions": ["100"],
+        "versions": [
+            "100"
+        ],
         "available": true,
         "modes": [
             {
                 "id": "lines",
                 "name": "Commuter Lines",
                 "colors": [
-                    ["Z"],
-                    ["A"],
-                    ["E", "O"],
-                    ["P", "G"],
-                    ["M", "I"],
-                    ["K"],
-                    ["Y", "L", "H", "X"],
-                    ["U"],
-                    ["D", "T", "R"],
-                    ["V"]
+                    [
+                        "Z"
+                    ],
+                    [
+                        "A"
+                    ],
+                    [
+                        "E",
+                        "O"
+                    ],
+                    [
+                        "P",
+                        "G"
+                    ],
+                    [
+                        "M",
+                        "I"
+                    ],
+                    [
+                        "K"
+                    ],
+                    [
+                        "Y",
+                        "L",
+                        "H",
+                        "X"
+                    ],
+                    [
+                        "U"
+                    ],
+                    [
+                        "D",
+                        "T",
+                        "R"
+                    ],
+                    [
+                        "V"
+                    ]
                 ],
-                "filters" : [
+                "filters": [
                     {
                         "type": "train_type",
                         "allow": true,
-                        "list": ["HL","HV"]
+                        "list": [
+                            "HL",
+                            "HV"
+                        ]
                     }
                 ]
             }

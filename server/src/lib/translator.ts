@@ -105,10 +105,27 @@ export class DataTranslator {
                 return a
             }, [])
         filteredTrains.forEach(t => {
+            console.log(t.type, t.id)
             let color = 0
             switch (mode) {
                 case "route":
-                    color = 1
+                    const start = t.properties.start_point
+                    const end = t.properties.end_point
+                    console.log(start, end)
+                    const special = colorTable.map((c) => c.filter(e => e[0] == "*"), [])
+                    if (special.some((e, i) => {
+                        if (e.some(a => a.slice(1, a.length) == t.type)) {
+                            color = i
+                        console.log(e.some(a => a.slice(1, a.length) == t.type))
+                            return true
+                        } else return false
+                    })) break
+                    color = colorTable.findIndex(c => c.some(l => {
+                        const [s, e] = l.split("-")
+                        if ((s == start && e == end) || (e == start && s == end)) return true
+                        else return false
+                    }))
+                    if (color == -1) color = 10
                     break
                 case "lines":
                     color = colorTable.findIndex(c => c.some(l => l == t.properties.commuter_line_id)) + 1 || 10

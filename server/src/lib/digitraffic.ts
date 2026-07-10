@@ -39,7 +39,7 @@ export class DigitrafficDataCollector {
     }
     #updateTrain(t: Train) {
         this.#listeners.forEach(l => l(t))
-        if (t.running) {
+        if (!t.running) {
             this.state.delete(t.id)
         } else {
             this.state.set(t.id, t)
