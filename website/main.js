@@ -37,6 +37,7 @@ window.addEventListener("DOMContentLoaded", () => {
             </div>
             <a href="/web_installer/?board_id=${m.id}_100"><button>Firmware Installer</button></a>
             <a href="/3d_viewer/?board_id=${m.id}"><button>3D Viewer</button></a>
+            <a href="/simulator/?board_id=${m.id}"><button>Simulator</button></a>
         </div>
         `
     })

@@ -10,9 +10,16 @@ async function getSVG() {
     viewer.innerHTML = text
 }
 
+const modes = {
+    "hki-ltm": ["lines"],
+    "fin-ltm": ["route"]
+}
+
+let mode = modes[board_id][0]
+
+
 function connect() {
-    const leds = document.querySelector("#leds").children;
-    const status_led_elements = Array.from(document.querySelectorAll(".led")).reverse()
+    const status_led_elements = Array.from(document.querySelectorAll(".led"))
     const status_leds = [];
     while (status_led_elements.length) status_leds.push(status_led_elements.splice(0, 2));
     /* 
@@ -44,12 +51,12 @@ function connect() {
             }
         })
     }
-    let color_table = {0: [0,0,0], 1: [128,0,0]}
+    let color_table = { 0: [0, 0, 0], 1: [128, 0, 0] }
     const led_state = new Map()
 
     console.log("Connecting to server with WebSocket")
     setStatus(1, 1, 2)
-    const ws = new WebSocket(`wss://ltm-api-v2.hekinav.dev?board_id=${board_id}&version=100&mode_id=route`)
+    const ws = new WebSocket(`wss://ltm-api-v2.hekinav.dev?board_id=${board_id}&version=100&mode_id=${mode}`)
     ws.addEventListener("close", () => {
         setStatus(1, 1, 3)
         console.log("WebSocket closed")
@@ -82,7 +89,6 @@ function connect() {
                     break
                 case "colors":
                     color_table = message.colors
-                    console.log(colors)
                     break
                 case "events":
                     console.log(`Received ${message.updates.length} updates`)
@@ -91,13 +97,13 @@ function connect() {
                             console.log(`${u.d.id} X`)
                             console.log(`${u.d.id} X`)
                             if (!led_state.has(u.d.id)) return
-                            leds[led_state[u.d.id] - 100].setAttribute("fill", "none")
+                            document.querySelector(`#led${led_state[u.d.id]}`).setAttribute("fill", "none")
                             led_state.delete(u.d.id)
                         } else {
                             console.log(`${u.d.id} => ${u.d.idx}`)
                             const color = color_table[u.d.clr] || color_table[1]
                             console.log(color, color_table)
-                            leds[u.d.idx - 100].setAttribute("fill", `rgb(${color.join(",")})`)
+                            document.querySelector(`#led${u.d.idx}`).setAttribute("fill", `rgb(${color.join(",")})`)
                             led_state.set(u.d.id, u.d.idx)
                         }
                     })
