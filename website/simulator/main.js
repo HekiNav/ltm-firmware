@@ -44,8 +44,9 @@ function connect() {
             }
         })
     }
-    console.log(leds.length)
+    let color_table = {0: [0,0,0], 1: [128,0,0]}
     const led_state = new Map()
+
     console.log("Connecting to server with WebSocket")
     setStatus(1, 1, 2)
     const ws = new WebSocket(`wss://ltm-api-v2.hekinav.dev?board_id=${board_id}&version=100&mode_id=route`)
@@ -79,6 +80,10 @@ function connect() {
                 case "ping_res":
                     console.log("Received ping response")
                     break
+                case "colors":
+                    color_table = message.colors
+                    console.log(colors)
+                    break
                 case "events":
                     console.log(`Received ${message.updates.length} updates`)
                     message.updates.forEach(u => {
@@ -90,7 +95,9 @@ function connect() {
                             led_state.delete(u.d.id)
                         } else {
                             console.log(`${u.d.id} => ${u.d.idx}`)
-                            leds[u.d.idx - 100].setAttribute("fill", "red")
+                            const color = color_table[u.d.clr] || color_table[1]
+                            console.log(color, color_table)
+                            leds[u.d.idx - 100].setAttribute("fill", `rgb(${color.join(",")})`)
                             led_state.set(u.d.id, u.d.idx)
                         }
                     })
