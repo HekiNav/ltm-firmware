@@ -131,7 +131,7 @@ const char index_html[] PROGMEM = R"=====(
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LED Rails Device</title>
+  <title>Live Train Map Device</title>
   <style>
     body {
       background: #222;
