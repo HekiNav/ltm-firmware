@@ -1,4 +1,4 @@
-[Back to main page](../)
+[Back to main page](https://github.com/HekiNav/ltm-firmware)
 # Server
 Processes train data into a format that is easier to consume for the map.
 
