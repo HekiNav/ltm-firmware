@@ -10,5 +10,9 @@ All the software used by the live train maps: [Helsinki](https://github.com/Heki
 ### [`/server`](https://github.com/HekiNav/ltm-firmware/tree/main/server/README.md)
 Contains the NodeJS server that processes data from Fintraffic to amore usable format
 
-### [`/firmware`](https://github.com/HekiNav/ltm-firmware/tree/main/website/README.md)
+### [`/firmware`](https://github.com/HekiNav/ltm-firmware/tree/main/firmware/README.md)
+Contains the source and config
+files for the firmware
+
+### [`/website`](https://github.com/HekiNav/ltm-firmware/tree/main/website/README.md)
 Contains the source files for the website
