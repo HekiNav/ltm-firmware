@@ -38,7 +38,7 @@ String mapModes[] =
 #elif defined(FIN_LTM)
 String mapModes[] =
 	{
-		"routes"};
+		"route", "length"};
 #else
 String mapModes[] =
 	{
@@ -48,7 +48,6 @@ int16_t currentMapMode = 0;
 
 String serverURL = String("/?board_id=") + CITY_CODE + "-ltm&version=" + BACKEND_VERSION + "&mode_id=" + mapModes[currentMapMode];
 String serverHost = "ltm-api-v2.hekinav.dev";
-
 
 bool ledUpdateScheduled = false;
 
@@ -73,7 +72,7 @@ typedef struct
 
 TaskHandle_t statusLedTaskHandle;
 
-std::map<int, std::array<int,2>> trains;
+std::map<int, std::array<int, 2>> trains;
 
 uint8_t serverConnectionTries = 0;
 unsigned long lastDrawTime = 0;
@@ -253,11 +252,15 @@ void drawMap()
 	suspendDithering();
 	clearLEDs();
 
-	for (auto const& t : trains)
+	setAllLedsColor(CRGB().Blue);
+
+	/* for (auto const &t : trains)
 	{
+		Serial.println(t.second[0]);
+		Serial.println(t.second[1]);
 		setBlockColorId(t.second[0], t.second[1]);
 	}
-
+ */
 	ledUpdateScheduled = false;
 
 	resumeDithering();
