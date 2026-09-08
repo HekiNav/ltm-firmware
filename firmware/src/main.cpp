@@ -9,6 +9,9 @@
 #include <vector>
 #include <map>
 
+#include <NeoPixelBus.h>
+#include <NeoPixelBusLg.h>
+
 #include "WiFiConfig.h"
 
 #include "brightness.h"
@@ -48,6 +51,8 @@ int16_t currentMapMode = 0;
 
 String serverURL = String("/?board_id=") + CITY_CODE + "-ltm&version=" + BACKEND_VERSION + "&mode_id=" + mapModes[currentMapMode];
 String serverHost = "ltm-api-v2.hekinav.dev";
+
+NeoPixelBusLg<NeoGrbFeature, NeoEsp32Rmt0Ws2811Method> leds_1(LED_1_PIXELS, LED_1_PIN);
 
 bool ledUpdateScheduled = false;
 
@@ -249,21 +254,21 @@ void setBlockColorId(uint16_t block, int colorId)
 
 void drawMap()
 {
-	suspendDithering();
+	/* suspendDithering();
 	clearLEDs();
 
 	setAllLedsColor(CRGB().Blue);
 
-	/* for (auto const &t : trains)
+	for (auto const &t : trains)
 	{
 		Serial.println(t.second[0]);
 		Serial.println(t.second[1]);
 		setBlockColorId(t.second[0], t.second[1]);
 	}
- */
+
 	ledUpdateScheduled = false;
 
-	resumeDithering();
+	resumeDithering(); */
 }
 
 void parseEvent(uint8_t *payload, size_t length)
@@ -391,7 +396,7 @@ void setup()
 	Serial.setDebugOutput(true);
 	xTaskCreate(improvSerialTask, "Improv Serial Task", 4096, nullptr, 3, nullptr);
 
-	setupLeds();
+	//setupLeds();
 
 	// --- Setup Buttons ---
 	buttons.add(BRIGHTNESS_DOWN_BUTTON, onBrightnessDown);
@@ -423,6 +428,12 @@ void setup()
 		Serial.println("No WiFi credentials found...");
 		setStatusLedState(WIFI_LED_PIN, LED_ON_RED);
 	}
+
+	leds_1.Begin();
+
+	leds_1.ClearTo(RgbColor(255,0,0));
+
+	leds_1.Show();
 
 	brightness.begin();
 }
