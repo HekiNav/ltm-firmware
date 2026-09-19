@@ -114,6 +114,29 @@
                     }
                 ]
             }
+            ,
+            {
+                "id": "locomotive",
+                "name": "Locomotive type",
+                "colors": [
+                    ["electric"],
+                    ["diesel"],
+                    ["multiple"],
+                    ["other"]
+                ],
+                "filters": [
+                    {
+                        "type": "train_type",
+                        "allow": false,
+                        "list": [
+                            "HL",
+                            "HV",
+                            "SAA",
+                            "W"
+                        ]
+                    }
+                ]
+            }
         ]
     },
     {

@@ -1,4 +1,5 @@
 import * as mqtt from "mqtt"
+import compositions from './compositions.js'
 
 export class DigitrafficDataCollector {
     state = new Map<number, Train>()
@@ -23,7 +24,8 @@ export class DigitrafficDataCollector {
         this.#client.on("error", console.error)
         this.#client.on("message", (topic, payload) => {
             //console.log("[DIGITRAFFIC]"+topic)
-            const data = parseTrain(JSON.parse(payload.toString()))
+            const raw = JSON.parse(payload.toString()) as TrainData
+            const data = parseTrain(raw)
             if (!data) return
             this.#updateTrain(data)
         })
@@ -34,7 +36,9 @@ export class DigitrafficDataCollector {
         data.forEach(train => {
             const data = parseTrain(train)
             if (!data) return
-            if (data.running) i++ && this.state.set(data.id, data)
+            if (data.running) {
+                i++ && this.state.set(data.id, data)
+            }
         });
     }
     #updateTrain(t: Train) {
@@ -77,7 +81,8 @@ export function parseTrain(data: TrainData): Train | null {
                 time: last.actualTime ? new Date(last.actualTime) : new Date(new Date(last.scheduledTime).getTime() + (last.differenceInMinutes || 0) * 60_000)
             }
         },
-        properties: props
+        properties: props,
+        departureDate: data.departureDate
     }
     const next = data.timeTableRows[lastIndex + 1] || last
     return {
@@ -95,7 +100,8 @@ export function parseTrain(data: TrainData): Train | null {
                 time: next.actualTime ? new Date(next.actualTime) : new Date(new Date(next.scheduledTime).getTime() + (next.differenceInMinutes || 0) * 60_000)
             }
         },
-        properties: props
+        properties: props,
+        departureDate: data.departureDate
     }
 }
 export interface Train {
@@ -104,6 +110,7 @@ export interface Train {
     state: AnyTrainState
     properties: TrainProperties,
     running: boolean
+    departureDate: string
 }
 export interface TrainProperties {
     start_point: string,
