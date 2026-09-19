@@ -97,7 +97,11 @@ void onImprovWiFiConnectedCb(const char *ssid, const char *password) {
  * @return true if saved WiFi credentials were found, false otherwise
  */
 bool WiFiImprovSetup() {
+#if defined(RESET_WIFI)
+
+#else
 	importWiFi();
+#endif
 
 #if defined(CONFIG_IDF_TARGET_ESP32S2)
 	enum ImprovTypes::ChipFamily chip = ImprovTypes::ChipFamily::CF_ESP32_S2;

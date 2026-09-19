@@ -17,11 +17,16 @@ export function encodeMessage(msg: SocketMessage): WebSocket.RawData {
 
 export type SocketMessage = 
 SocketEventsMessage | SocketErrorMessage | SocketPingReqMessage | 
-SocketPingResMessage | SocketUUIDMessage | {type: "null"}| SocketColorsMessage
+SocketPingResMessage | SocketUUIDMessage | {type: "null"}| SocketColorsMessage | SocketChangeModesMessage
 
 export interface SocketErrorMessage {
     type: "error",
     message: string
+}
+
+export interface SocketChangeModesMessage {
+    type: "change_mode",
+    color: string
 }
 
 export interface SocketColorsMessage {

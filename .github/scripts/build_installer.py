@@ -13,6 +13,8 @@ from typing import List, Optional
 ENVIRONMENTS = [
     {"id": "hki-ltm_100", "name": "LTM Firmware (Helsinki) V1.0"},
     {"id": "fin-ltm_100", "name": "LTM Firmware (Finland) V1.0"},
+    {"id": "hki-ltm_100_reset_wifi", "name": "LTM Firmware (Helsinki) V1.0 (Wi-Fi Reset)"},
+    {"id": "fin-ltm_100_reset_wifi", "name": "LTM Firmware (Finland) V1.0 (Wi-Fi Reset)"},
 ]
 SITE_DIR = "_site/web_installer"
 BUILD_DIR = "firmware/.pio/build"
