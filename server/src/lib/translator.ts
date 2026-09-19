@@ -68,6 +68,7 @@ export class DataTranslator {
         console.log("[TRANSLATOR] Loading boards.jsonc")
         importJSONC<BoardsConfig>(config_path + "boards.jsonc").then((data) => {
             this.#boards_config = data
+            console.log(this.#boards_config)
             if (!this.#boards_config) throw "Failed to load boards.jsonc"
             Promise.all(this.#boards_config.map(async board => {
                 await Promise.all(board.versions.map(async ver => {

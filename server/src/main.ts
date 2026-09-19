@@ -12,7 +12,7 @@ export type RGBArray = [number, number, number]
 
 // some colors are skipped due to them looking too similar to other colors in testing
 export const colors = {
-  0: [0,0,0] as RGBArray,          // Black
+  0: [0, 0, 0] as RGBArray,          // Black
   1: [255, 0, 0] as RGBArray,     // Red
   2: [255, 128, 0] as RGBArray,   // Orange
   3: [255, 255, 0] as RGBArray,   // Yellow
@@ -89,7 +89,7 @@ socket.on('connection', function connection(c, r) {
     }))
     return c.close()
   }
-  
+
   c.send(encodeMessage({
     type: "colors",
     colors: colors
@@ -159,7 +159,7 @@ socket.on('connection', function connection(c, r) {
 
 
   c.on("close", () => {
-    console.log("[WS SERVER] CLosed connection")
+    console.log("[WS SERVER] Closed connection")
     digitraffic.offUpdate(cid)
   })
 
@@ -176,9 +176,14 @@ socket.on('connection', function connection(c, r) {
           c.send(encodeMessage({ type: "ping_res" }))
           break
         case "change_mode":
+          console.log(message)
           current_mode = message.mode
           c.send(encodeMessage({ type: "clear" }))
           sendEvents(Array.from(digitraffic.state.values()), true)
+          c.send(encodeMessage({
+            type: "colors",
+            colors: colors
+          }))
           break
         default:
           console.log("[WS SERVER] Received data of unknown type: " + message.type)
