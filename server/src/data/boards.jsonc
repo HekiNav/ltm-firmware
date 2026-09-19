@@ -143,6 +143,42 @@
                         ]
                     }
                 ]
+            },
+            {
+                "id": "locomotive_type",
+                "name": "Locomotive type",
+                "colors": [
+                    [
+                        "Sr1"
+                    ],
+                    [
+                        "Sr2"
+                    ],
+                    [
+                        "Sr3"
+                    ],
+                    [
+                        "Dr16"
+                    ],
+                    [
+                        "Sm3"
+                    ],
+                    [
+                        "Sm6"
+                    ]
+                ],
+                "filters": [
+                    {
+                        "type": "train_type",
+                        "allow": false,
+                        "list": [
+                            "HL",
+                            "HV",
+                            "SAA",
+                            "W"
+                        ]
+                    }
+                ]
             }
         ]
     },
