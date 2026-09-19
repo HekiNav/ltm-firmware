@@ -98,7 +98,7 @@ class BrightnessManager {
 		uint8_t gammaBrightness = static_cast<uint8_t>(pow((brightness / 255.0f), gamma) * 255.0f);
 
 		// Update the LEDs
-		FastLED.setBrightness(powerOn ? gammaBrightness : 0);
+		FastLED.setBrightness(powerOn ? gammaBrightness : 1);
 
 		Serial.printf("Brightness set to %0.0f/255\n", brightness);
 

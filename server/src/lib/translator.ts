@@ -1,4 +1,5 @@
 import { AnyTrainState, Train, TrainBetweenStationsState } from "./digitraffic.js"
+import compositions from './compositions.js'
 import { importJSONC } from "./jsonc.js"
 import { MapEvent } from "./mapEvent.js"
 
@@ -10,7 +11,7 @@ export interface BoardConfig {
     available: boolean,
     modes: BoardMode[]
 }
-export type ColorTable = string[][]
+export type ColorTable = Array<Array<string | number>>
 export interface BoardMode {
     id: string,
     name: string,
@@ -113,15 +114,15 @@ export class DataTranslator {
                     const start = t.properties.start_point
                     const end = t.properties.end_point
                     console.log(start, end)
-                    const special = colorTable.map((c) => c.filter(e => e[0] == "*"), [])
+                    const special = colorTable.map((c) => c.filter((e): e is string => typeof e === 'string' && e[0] == "*"), [])
                     if (special.some((e, i) => {
-                        if (e.some(a => a.slice(1, a.length) == t.type)) {
+                        if (e.some(a => a.slice(1) == t.type)) {
                             color = i
-                        console.log(e.some(a => a.slice(1, a.length) == t.type))
                             return true
                         } else return false
                     })) break
                     color = colorTable.findIndex(c => c.some(l => {
+                        if (typeof l !== 'string') return false
                         const [s, e] = l.split("-")
                         if ((s == start && e == end) || (e == start && s == end)) return true
                         else return false
@@ -129,8 +130,56 @@ export class DataTranslator {
                     if (color == -1) color = 10
                     break
                 case "lines":
-                    color = colorTable.findIndex(c => c.some(l => l == t.properties.commuter_line_id)) + 1 || 10
+                    color = colorTable.findIndex(c => c.some(l => typeof l === 'string' && l == t.properties.commuter_line_id)) + 1 || 10
                     break
+                case "length":
+                    // colorTable entries expected to be [min, max] number pairs
+                    try {
+                        const comp = compositions.get(t.id, (t as any).departureDate)
+                        let count = 0
+                        if (comp) {
+                            const vehicles = comp.vehicles || comp.formation?.vehicles || comp.composition?.vehicles || comp.formation?.composition?.vehicles
+                            if (Array.isArray(vehicles)) count = vehicles.length
+                            else if (typeof comp.vehicleCount === 'number') count = comp.vehicleCount
+                        }
+                        // fallback: use number of scheduled stations as rough proxy
+                        if (!count) count = t.properties.stations.length
+
+                        color = colorTable.findIndex(c => {
+                            if (c.length >= 2 && typeof c[0] == 'number' && typeof c[1] == 'number') {
+                                const min = c[0] as number
+                                const max = c[1] as number
+                                return count >= min && count < max
+                            }
+                            return false
+                        })
+                        if (color == -1) color = 10
+                        break
+                    } catch (e) { console.error(e); color = 10; break }
+                case "locomotive":
+                    try {
+                        const comp = compositions.get(t.id, (t as any).departureDate)
+                        let locoType: string | null = null
+                        if (comp) {
+                            const vehicles = comp.vehicles || comp.formation?.vehicles || comp.composition?.vehicles || comp.formation?.composition?.vehicles
+                            if (Array.isArray(vehicles)) {
+                                // try to find a vehicle that looks like a locomotive
+                                const v = vehicles.find((v: any) => {
+                                    const keys = ['vehicleCategory','type','vehicleType','series','powerType']
+                                    return keys.some(k => v[k] && String(v[k]).toLowerCase().includes('loc'))
+                                }) || vehicles[0]
+                                if (v) {
+                                    locoType = v.vehicleType || v.type || v.series || v.powerType || null
+                                }
+                            }
+                        }
+                        // fallback to train type
+                        if (!locoType) locoType = t.type
+
+                        color = colorTable.findIndex(c => c.some(l => typeof l == 'string' && locoType && locoType.toLowerCase().includes((l as string).toLowerCase())))
+                        if (color == -1) color = 10
+                        break
+                    } catch (e) { console.error(e); color = 10; break }
                 default:
                     console.error(`Unknown mode (${mode}) - Cannot process`)
             }

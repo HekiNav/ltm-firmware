@@ -322,7 +322,8 @@ void parseEvent(uint8_t *payload, size_t length)
 	}
 	else if (type == "clear")
 	{
-		
+		trains.clear();
+		ledUpdateScheduled = true;
 	}
 	else
 	{
@@ -359,8 +360,15 @@ void onPower()
 void onMode()
 {
 	// Cycle through modes
-	currentMapMode = (currentMapMode + 1) % mapModes->length();
+	currentMapMode = (currentMapMode + 1) % (sizeof(mapModes) / sizeof(*mapModes));
+	JsonDocument doc;
+	doc["type"] = "change_mode";
+	doc["mode"] = mapModes[currentMapMode];
+	char buffer[200];
+	size_t len = serializeJson(doc, buffer);
+	ws.sendTXT(buffer, len);
 	brightness.setPower(true); // Ensure brightness is on when changing modes
+
 	Serial.println("Mode button pressed");
 }
 
