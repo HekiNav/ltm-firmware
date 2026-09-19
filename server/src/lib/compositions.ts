@@ -61,6 +61,32 @@ export class DigitrafficCompositionCollector {
   get(trainNumber: number): CompositionData | undefined {
     return this.state.get(trainNumber)
   }
+
+  getCurrentSection(trainNumber: number, at: Date = new Date()): JourneySection | undefined {
+    const composition = this.state.get(trainNumber)
+    if (!composition || composition.journeySections.length === 0) return undefined
+    const t = at.getTime()
+    const sorted = [...composition.journeySections].sort(
+      (a, b) => new Date(a.beginTimeTableRow.scheduledTime).getTime() - new Date(b.beginTimeTableRow.scheduledTime).getTime()
+    )
+    const containing = sorted.find(s =>
+      new Date(s.beginTimeTableRow.scheduledTime).getTime() <= t &&
+      t <= new Date(s.endTimeTableRow.scheduledTime).getTime()
+    )
+    if (containing) return containing
+    const started = [...sorted].reverse().find(s => new Date(s.beginTimeTableRow.scheduledTime).getTime() <= t)
+    return started ?? sorted[0]
+  }
+
+  getLength(trainNumber: number, at: Date = new Date()): number | undefined {
+    return this.getCurrentSection(trainNumber, at)?.totalLength
+  }
+
+  getLocomotiveTypes(trainNumber: number, at: Date = new Date()): string[] | undefined {
+    const section = this.getCurrentSection(trainNumber, at)
+    if (!section) return undefined
+    return section.locomotives.map(l => l.locomotiveType)
+  }
 }
 
 export interface CompositionData {
