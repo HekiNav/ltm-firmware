@@ -31,7 +31,8 @@
                         "TPE-JY",
                         "TPE-KUO",
                         "HKI-JNS",
-                        "HKI-IMR"
+                        "HKI-IMR",
+                        "SK-OL"
                     ],
                     [
                         "HKI-KAJ",
@@ -45,12 +46,13 @@
                         "HKI-TUS",
                         "KKN-TUS",
                         "KKN-TKU",
+                        "HKI-ROI",
                         "KR-TUS",
-                        "KR-TKU",
-                        "SK-OL"
+                        "KR-TKU"
                     ], 
                     [
                         "TPE-KEU",
+                        "KJÄ-HKI",
                         "*PYO"
                     ],
                     [
