@@ -1,156 +1,110 @@
-import Database from 'better-sqlite3'
-import { fileURLToPath } from 'node:url'
-import { dirname, join } from 'node:path'
-import fs from 'fs'
+import * as mqtt from "mqtt"
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
+export class DigitrafficCompositionCollector {
+  state = new Map<number, CompositionData>()
+  #client: mqtt.MqttClient
+  #listeners = new Map<string, (c: CompositionData) => void>()
 
-export class CompositionCache {
-  db: any
-  private lastBulkFetchDate: string | null = null
-  private bulkFetchInProgress = false
-
-  constructor(baseDir?: string) {
-    const dataDir = baseDir || join(__dirname, '..', 'data')
-    fs.mkdirSync(dataDir, { recursive: true })
-    const dbPath = join(dataDir, 'compositions.db')
-    this.db = new Database(dbPath)
-    this.db.pragma('journal_mode = WAL')
-    this.init()
-    this.startScheduledJob()
-  }
-
-  init() {
-    this.db.prepare(`
-      CREATE TABLE IF NOT EXISTS compositions (
-        key TEXT PRIMARY KEY,
-        trainNumber INTEGER,
-        departureDate TEXT,
-        etag TEXT,
-        data TEXT,
-        lastFetched INTEGER
-      )
-    `).run()
-  }
-
-  key(trainNumber: number, departureDate: string) {
-    return `${trainNumber}_${departureDate}`
-  }
-
-  get(trainNumber: number, departureDate: string) {
-    const row = this.db.prepare('SELECT data FROM compositions WHERE key = ?').get(this.key(trainNumber, departureDate))
-    if (!row) return null
-    try {
-      return JSON.parse(row.data)
-    } catch (e) {
-      return null
-    }
-  }
-
-  getEtag(trainNumber: number, departureDate: string) {
-    const row = this.db.prepare('SELECT etag FROM compositions WHERE key = ?').get(this.key(trainNumber, departureDate))
-    return row?.etag || null
-  }
-
-  upsert(trainNumber: number, departureDate: string, etag: string | null, data: unknown) {
-    const key = this.key(trainNumber, departureDate)
-    const now = Date.now()
-    const json = JSON.stringify(data)
-    this.db.prepare(`INSERT OR REPLACE INTO compositions (key, trainNumber, departureDate, etag, data, lastFetched) VALUES (?, ?, ?, ?, ?, ?)`)
-      .run(key, trainNumber, departureDate, etag, json, now)
-  }
-
-  async fetchRemote(trainNumber: number, departureDate: string) {
-    // If already cached, return
-    const cached = this.get(trainNumber, departureDate)
-    if (cached) return cached
-
-    try {
-      const etag = this.getEtag(trainNumber, departureDate)
-      const headers: Record<string, string> = {}
-      if (etag) headers['If-None-Match'] = etag
-
-      const url = `https://rata.digitraffic.fi/api/v1/compositions/${departureDate}/${trainNumber}/`
-      const res = await fetch(url, { headers })
-      
-      if (res.status === 304) {
-        return this.get(trainNumber, departureDate)
-      }
-      if (!res.ok) {
-        return null
-      }
-
-      const newEtag = res.headers.get('etag')
-      const data = await res.json()
-      this.upsert(trainNumber, departureDate, newEtag, data)
-      return data
-    } catch (e) {
-      return cached || null
-    }
-  }
-
-  private async fetchAllCompositionsForDate(date: string) {
-    if (this.bulkFetchInProgress) return
-    this.bulkFetchInProgress = true
-
-    try {
-      const url = `https://rata.digitraffic.fi/api/v1/compositions/${date}/`
-      const res = await fetch(url)
-
-      if (!res.ok) {
-        console.error(`[COMPOSITIONS] Failed to fetch all compositions for ${date}: ${res.status}`)
-        return
-      }
-
-      const compositions = await res.json()
-      if (!Array.isArray(compositions)) {
-        console.error('[COMPOSITIONS] Unexpected response format')
-        return
-      }
-
-      compositions.forEach((comp: any) => {
-        const trainNumber = comp.trainNumber
-        if (trainNumber) {
-          const etag = res.headers.get('etag')
-          this.upsert(trainNumber, date, etag, comp)
+  constructor(onready: (c: DigitrafficCompositionCollector) => void) {
+    console.log("[COMPOSITIONS] Getting initial data")
+    this.#getInitialData().then(() => {
+      onready(this)
+    })
+    console.log("[COMPOSITIONS] Connecting to MQTT")
+    this.#client = mqtt.connect("wss://rata.digitraffic.fi/mqtt")
+    this.#client.on("connect", () => {
+      this.#client.subscribe("compositions/#", (err) => {
+        if (err) {
+          console.error("[COMPOSITIONS] MQTT subscription error %s", err)
+        } else {
+          console.log("[COMPOSITIONS] Connected to MQTT")
         }
       })
+    })
+    this.#client.on("error", console.error)
+    this.#client.on("message", (_topic, payload) => {
+      let data: CompositionData
+      try {
+        data = JSON.parse(payload.toString())
+      } catch (e) {
+        console.error("[COMPOSITIONS] Failed to parse message %s", e)
+        return
+      }
+      this.#update(data)
+    })
+  }
 
-      this.lastBulkFetchDate = date
-      console.log(`[COMPOSITIONS] Fetched ${compositions.length} compositions for ${date}`)
+  async #getInitialData() {
+    const today = new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Helsinki" }) // yyyy-mm-dd
+    try {
+      const res = await fetch(`https://rata.digitraffic.fi/api/v1/compositions/${today}`)
+      const data = await res.json() as CompositionData[]
+      data.forEach(c => this.state.set(c.trainNumber, c))
+      console.log(`[COMPOSITIONS] Seeded ${data.length} compositions for ${today}`)
     } catch (e) {
-      const error = e instanceof Error ? e.message : String(e)
-      console.error(`[COMPOSITIONS] Error fetching all compositions: ${error}`)
-    } finally {
-      this.bulkFetchInProgress = false
+      console.error("[COMPOSITIONS] Failed to fetch initial data %s", e)
     }
   }
 
-  private startScheduledJob() {
-    // Run at startup
-    const today = new Date().toISOString().split('T')[0]
-    this.fetchAllCompositionsForDate(today)
+  #update(c: CompositionData) {
+    this.#listeners.forEach(l => l(c))
+    this.state.set(c.trainNumber, c)
+  }
 
-    // Run once per day at 2 AM
-    const scheduleNextRun = () => {
-      const now = new Date()
-      const tomorrow = new Date(now)
-      tomorrow.setDate(tomorrow.getDate() + 1)
-      tomorrow.setHours(2, 0, 0, 0)
+  onUpdate(id: string, fn: (c: CompositionData) => void) {
+    this.#listeners.set(id, fn)
+  }
+  offUpdate(id: string) {
+    this.#listeners.delete(id)
+  }
 
-      const delay = tomorrow.getTime() - now.getTime()
-      console.log(`[COMPOSITIONS] Scheduled next bulk fetch in ${Math.round(delay / 1000 / 60)} minutes`)
-
-      setTimeout(() => {
-        const date = new Date().toISOString().split('T')[0]
-        this.fetchAllCompositionsForDate(date)
-        scheduleNextRun()
-      }, delay)
-    }
-
-    scheduleNextRun()
+  get(trainNumber: number): CompositionData | undefined {
+    return this.state.get(trainNumber)
   }
 }
 
-const cache = new CompositionCache()
-export default cache
+export interface CompositionData {
+  trainNumber: number
+  departureDate: string
+  operatorUICCode: number
+  operatorShortCode: string
+  trainCategory: string
+  trainType: string
+  version: number
+  journeySections: JourneySection[]
+}
+export interface JourneySection {
+  beginTimeTableRow: CompositionTimeTableRow
+  endTimeTableRow: CompositionTimeTableRow
+  locomotives: Locomotive[]
+  wagons?: Wagon[]
+  totalLength: number
+  maximumSpeed: number
+}
+export interface CompositionTimeTableRow {
+  stationShortCode: string
+  stationUICCode: number
+  countryCode: "FI" | "RU"
+  type: "ARRIVAL" | "DEPARTURE"
+  scheduledTime: string
+}
+export interface Locomotive {
+  vehicleNumber?: string
+  location: number
+  locomotiveType: string
+  powerType: string
+}
+export interface Wagon {
+  vehicleNumber?: string
+  location: number
+  salesNumber: number
+  length?: number
+  playground?: boolean
+  pet?: boolean
+  catering?: boolean
+  video?: boolean
+  luggage?: boolean
+  smoking?: boolean
+  disabled?: boolean
+  wagonType?: string
+}

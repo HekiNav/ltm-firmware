@@ -83,7 +83,9 @@
                             "IC",
                             "S",
                             "PYO",
-                            "MUS"
+                            "MUS",
+                            "H",
+                            "HDM"
                         ]
                     }
                 ]
@@ -100,29 +102,6 @@
                         100,
                         200
                     ]
-                ],
-                "filters": [
-                    {
-                        "type": "train_type",
-                        "allow": false,
-                        "list": [
-                            "HL",
-                            "HV",
-                            "SAA",
-                            "W"
-                        ]
-                    }
-                ]
-            }
-            ,
-            {
-                "id": "locomotive",
-                "name": "Locomotive type",
-                "colors": [
-                    ["electric"],
-                    ["diesel"],
-                    ["multiple"],
-                    ["other"]
                 ],
                 "filters": [
                     {

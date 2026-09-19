@@ -5,6 +5,7 @@ import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SocketMessage, encodeMessage, parseMessage } from "./lib/socket.js";
 import { MapEvent } from "./lib/mapEvent.js";
+import { DigitrafficCompositionCollector } from "./lib/compositions.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -12,7 +13,7 @@ export type RGBArray = [number, number, number]
 
 // some colors are skipped due to them looking too similar to other colors in testing
 export const colors = {
-  0: [0,0,0] as RGBArray,          // Black
+  0: [0, 0, 0] as RGBArray,       // Black
   1: [255, 0, 0] as RGBArray,     // Red
   2: [255, 128, 0] as RGBArray,   // Orange
   3: [255, 255, 0] as RGBArray,   // Yellow
@@ -28,13 +29,16 @@ export const colors = {
   10: [255, 255, 255] as RGBArray, // White
 }
 
-const [digitraffic, translator] = await Promise.all([
+const [digitraffic, translator, compositions] = await Promise.all([
   new Promise<DigitrafficDataCollector>(res => {
     new DigitrafficDataCollector(res)
   }),
   new Promise<DataTranslator>(res => {
     new DataTranslator(__dirname + "/data/", res)
-  })
+  }),
+  new Promise<DigitrafficCompositionCollector>(res => {
+    new DigitrafficCompositionCollector(res)
+  }),
 ])
 
 const socket = new WebSocketServer({ port: 3010 })
@@ -89,7 +93,7 @@ socket.on('connection', function connection(c, r) {
     }))
     return c.close()
   }
-  
+
   c.send(encodeMessage({
     type: "colors",
     colors: colors
