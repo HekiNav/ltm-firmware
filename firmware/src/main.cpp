@@ -320,6 +320,10 @@ void parseEvent(uint8_t *payload, size_t length)
 			colorTable.push_back(CRGB(rgb[0] | 0, rgb[1] | 0, rgb[2] | 0));
 		}
 	}
+	else if (type == "clear")
+	{
+		
+	}
 	else
 	{
 		Serial.printf("Unknown event type: %s \n", type);

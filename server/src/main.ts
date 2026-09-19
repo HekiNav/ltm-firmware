@@ -176,7 +176,9 @@ socket.on('connection', function connection(c, r) {
           c.send(encodeMessage({ type: "ping_res" }))
           break
         case "change_mode":
-          c.send(encodeMessage({ type: "ping_res" }))
+          current_mode = message.mode
+          c.send(encodeMessage({ type: "clear" }))
+          sendEvents(Array.from(digitraffic.state.values()), true)
           break
         default:
           console.log("[WS SERVER] Received data of unknown type: " + message.type)
