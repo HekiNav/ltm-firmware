@@ -174,6 +174,9 @@ socket.on('connection', function connection(c, r) {
         case "ping_req":
           c.send(encodeMessage({ type: "ping_res" }))
           break
+        case "change_mode":
+          c.send(encodeMessage({ type: "ping_res" }))
+          break
         default:
           console.log("[WS SERVER] Received data of unknown type: " + message.type)
           break;

@@ -254,9 +254,14 @@ void drawMap()
 
 	for (auto const &t : trains)
 	{
-		Serial.println(t.second[0]);
-		Serial.println(t.second[1]);
-		setBlockColorId(t.second[0], t.second[1]);
+		if (brightness.isOn())
+		{
+			setBlockColorId(t.second[0], t.second[1]);
+		}
+		else
+		{
+			setBlockColorId(t.second[0], 0);
+		}
 	}
 
 	ledUpdateScheduled = false;
@@ -342,6 +347,7 @@ void onPower()
 	}
 	else
 	{
+		ledUpdateScheduled = true;
 		setStatusLedState(WIFI_LED_PIN, LED_OFF, SERVER_LED_PIN, LED_OFF);
 	}
 }
