@@ -69,7 +69,6 @@ export class DataTranslator {
         console.log("[TRANSLATOR] Loading boards.jsonc")
         importJSONC<BoardsConfig>(config_path + "boards.jsonc").then((data) => {
             this.#boards_config = data
-            console.log(this.#boards_config)
             if (!this.#boards_config) throw "Failed to load boards.jsonc"
             Promise.all(this.#boards_config.map(async board => {
                 await Promise.all(board.versions.map(async ver => {
@@ -107,13 +106,11 @@ export class DataTranslator {
                 return a
             }, [])
         filteredTrains.forEach(t => {
-            console.log(t.type, t.id)
             let color = 0
             switch (mode) {
                 case "route":
                     const start = t.properties.start_point
                     const end = t.properties.end_point
-                    console.log(start, end)
                     const special = colorTable.map((c) => c.filter((e): e is string => typeof e === 'string' && e[0] == "*"), [])
                     if (special.some((e, i) => {
                         if (e.some(a => a.slice(1) == t.type)) {
@@ -135,13 +132,13 @@ export class DataTranslator {
                 case "length":
                     const length = compositions?.getLength(t.id)
                     // no composition 
-                    color = length == undefined ? 10 : colorTable.findIndex(([min, max]) => length >= Number(min) && length < Number(max))
-                    if (color == -1) color = 10
+                    color = length == undefined ? 9 : colorTable.findIndex(([min, max]) => length >= Number(min) && length < Number(max))
                     break
                 case "locomotive_type":
                     const types = compositions?.getLocomotiveTypes(t.id)
-                    color = !types || types.length == 0 ? 10 : colorTable.findIndex(c => c.some(l => types.includes(String(l))))
-                    if (color == -1) color = 10
+                    color = colorTable.findIndex(c => c.some(l => types?.includes(String(l)))) || 10
+                    if (!types) color = 9
+                    if (color == 10) console.log(types)
                     break
                 default:
                     console.error(`Unknown mode (${mode}) - Cannot process`)

@@ -1,5 +1,4 @@
 import * as mqtt from "mqtt"
-import compositions from './compositions.js'
 
 export class DigitrafficDataCollector {
     state = new Map<number, Train>()

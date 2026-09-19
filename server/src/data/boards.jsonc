@@ -94,8 +94,13 @@
                 "id": "length",
                 "name": "Train length",
                 "colors": [
+                    [],
                     [
                         0,
+                        50
+                    ],
+                    [
+                        50,
                         100
                     ],
                     [
@@ -108,22 +113,10 @@
                     ],
                     [
                         300,
-                        400
-                    ],
-                    [
-                        400,
                         500
                     ],
                     [
                         500,
-                        600
-                    ],
-                    [
-                        600,
-                        700
-                    ],
-                    [
-                        700,
                         1000
                     ],
                     [
@@ -148,23 +141,27 @@
                 "id": "locomotive_type",
                 "name": "Locomotive type",
                 "colors": [
+                    [],
                     [
                         "Sr1"
+                    ],
+                    [
+                        "Dm12"
                     ],
                     [
                         "Sr2"
                     ],
                     [
-                        "Sr3"
-                    ],
-                    [
-                        "Dr16"
-                    ],
-                    [
                         "Sm3"
                     ],
                     [
+                        "Sr3"
+                    ],
+                    [
                         "Sm6"
+                    ],
+                    [
+                        "Dr16"
                     ]
                 ],
                 "filters": [
@@ -241,6 +238,89 @@
                         "list": [
                             "HL",
                             "HV"
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": "locomotive_type",
+                "name": "Locomotive type",
+                "colors": [
+                    [],
+                    [
+                        "Sm2"
+                    ],
+                    [
+                        "Sr1","Sr2","Sr3","Sm3"
+                    ],
+                    [
+                        
+                    ],
+                    [
+                        "Sm4"
+                    ],
+                    [
+                        
+                    ],
+                    [
+                        "Sm6"
+                    ],
+                    [
+                        "Sm5"
+                    ]
+                ],
+                "filters": [
+                    {
+                        "type": "train_type",
+                        "allow": false,
+                        "list": [
+                            "SAA",
+                            "W"
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": "length",
+                "name": "Train length",
+                "colors": [
+                    [],
+                    [
+                        0,
+                        50
+                    ],
+                    [
+                        50,
+                        100
+                    ],
+                    [
+                        100,
+                        200
+                    ],
+                    [
+                        200,
+                        300
+                    ],
+                    [
+                        300,
+                        500
+                    ],
+                    [
+                        500,
+                        1000
+                    ],
+                    [
+                        1000,
+                        10000
+                    ]
+                ],
+                "filters": [
+                    {
+                        "type": "train_type",
+                        "allow": false,
+                        "list": [
+                            "SAA",
+                            "W"
                         ]
                     }
                 ]
