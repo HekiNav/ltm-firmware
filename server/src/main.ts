@@ -39,6 +39,7 @@ const [digitraffic, translator] = await Promise.all([
 
 const socket = new WebSocketServer({ port: 3010 })
 
+console.log("jdhdh")
 socket.on("error", console.error)
 socket.on("listening", () => console.log("[WS SERVER] Listening"))
 
