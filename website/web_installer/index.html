@@ -248,6 +248,12 @@
                             optional.
                         </span>
                     </li>
+                    <li>If no Wi-Fi networks are found (only option is "Connect to other"), try installing the Wi-Fi reset firmware, then configuring Wi-Fi and finally installing the regular firmware to restore Wi-Fi settings.
+                        <br>
+                        <span style="margin-top:24px; color:#888; font-size:0.95em;">Installing the latest Firmware is
+                            optional.
+                        </span>
+                    </li>
                 </ol>
                 <div class="container">
                     <div class="version-btn-group">
@@ -258,10 +264,10 @@
                             onclick="selectVersion('fin-ltm_100')">Finland
                             V1.0</button>
                         <button type="button" class="btn version-btn" id="btn-hki-ltm_100_reset_wifi"
-                            onclick="selectVersion('hki-ltm_100')">Helsinki
+                            onclick="selectVersion('hki-ltm_100_reset_wifi')">Helsinki
                             V1.0 (Reset Wi-Fi)</button>
                         <button type="button" class="btn version-btn selected" id="btn-fin-ltm_100_reset_wifi"
-                            onclick="selectVersion('fin-ltm_100')">Finland
+                            onclick="selectVersion('fin-ltm_100_reset_wifi')">Finland
                             V1.0 (Reset Wi-Fi)</button>
                     </div>
                     <esp-web-install-button id="inst" manifest="bin/AKL_V1_1_0/manifest.json" improv-wifi>
