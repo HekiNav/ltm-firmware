@@ -13,6 +13,8 @@
 
 #include "brightness.h"
 
+#include "animation.h"
+
 #include "buttons.h"
 #include "ledManager.h"
 
@@ -28,17 +30,19 @@ const char *time_zone = "EET-2EEST,M3.5.0/3,M10.5.0/4";
 WebSocketsClient ws;
 bool wsConnecting = false;
 
+bool animating = false;
+
 CRGB black = CRGB::Black;
 std::vector<CRGB> colorTable;
 
 #if defined(HKI_LTM)
 String mapModes[] =
 	{
-		"lines"};
+		"lines", "length", "locomotive_type"};
 #elif defined(FIN_LTM)
 String mapModes[] =
 	{
-		"route", "length"};
+		"route", "length", "locomotive_type"};
 #else
 String mapModes[] =
 	{
@@ -46,7 +50,7 @@ String mapModes[] =
 #endif
 int16_t currentMapMode = 0;
 
-String serverURL = String("/?board_id=") + CITY_CODE + "-ltm&version=" + BACKEND_VERSION + "&mode_id=" + mapModes[currentMapMode];
+String serverURL = String("/?board_id=") + CITY_CODE + "-ltm&version=" + BACKEND_VERSION + "&mode_id=";
 String serverHost = "ltm-api-v2.hekinav.dev";
 
 bool ledUpdateScheduled = false;
@@ -249,24 +253,24 @@ void setBlockColorId(uint16_t block, int colorId)
 
 void drawMap()
 {
-	suspendDithering();
-	clearLEDs();
-
-	for (auto const &t : trains)
+	if (!animating)
 	{
-		if (brightness.isOn())
+		suspendDithering();
+		clearLEDs();
+		for (auto const &t : trains)
 		{
-			setBlockColorId(t.second[0], t.second[1]);
+			if (brightness.isOn() && !animating)
+			{
+				setBlockColorId(t.second[0], t.second[1]);
+			}
+			else if (!animating)
+			{
+				setBlockColorId(t.second[0], 0);
+			}
 		}
-		else
-		{
-			setBlockColorId(t.second[0], 0);
-		}
-	}
-
+		resumeDithering();
+	};
 	ledUpdateScheduled = false;
-
-	resumeDithering();
 }
 
 void parseEvent(uint8_t *payload, size_t length)
@@ -372,6 +376,74 @@ void onMode()
 	Serial.println("Mode button pressed");
 }
 
+constexpr int SIZE = 20;
+constexpr int STEPS = 8;
+constexpr int FRAME_MS = 3;
+constexpr float HUE_START = 30;
+constexpr float HUE_END = 245;
+
+DEFINE_GRADIENT_PALETTE(wave_gp){
+	0, 255, 0, 0,	  // red
+	40, 255, 60, 0,	  // orange
+	80, 255, 160, 0,  // yellow
+	120, 0, 255, 0,	  // green
+	160, 0, 80, 255,  // blue
+	200, 140, 0, 255, // purple
+	230, 255, 0, 120, // magenta
+	255, 255, 0, 0	  // red
+};
+CRGBPalette16 wavePal = wave_gp;
+
+static void setRow(int r, const CRGB &c)
+{
+	const LedRow &row = ANIMATION_LED_ROWS[r];
+	for (size_t l = 0; l < row.count; l++)
+		setBlockColorRGB(row.ids[l], c);
+}
+
+void onAnimation()
+{
+	animating = true;
+	suspendDithering();
+	clearLEDs();
+	resumeDithering();
+	vTaskDelay(pdMS_TO_TICKS(100));
+
+	const int rows = ANIMATION_LED_ROW_COUNT;
+	const int totalFrames = (rows + SIZE) * STEPS;
+
+	for (int f = 0; f < totalFrames; f++)
+	{
+		float head = (float)f / STEPS;
+
+		suspendDithering();
+		for (int r = 0; r < rows; r++)
+		{
+			float d = head - r;
+			if (d < 0 || d >= SIZE)
+			{
+				setRow(r, CRGB::Black);
+				continue;
+			}
+
+			float edge = min(min(d, SIZE - d) * 2.0f, 1.0f);
+			uint8_t idx = (uint8_t)(HUE_START + (d / SIZE) * (HUE_END - HUE_START));
+
+			CRGB c = ColorFromPalette(wavePal, idx);
+			c.nscale8((uint8_t)(255 * edge));
+			setRow(r, c);
+		}
+		resumeDithering();
+
+		vTaskDelay(pdMS_TO_TICKS(FRAME_MS));
+	}
+
+	vTaskDelay(pdMS_TO_TICKS(100));
+	animating = false;
+	ledUpdateScheduled = true;
+	clearLEDs();
+}
+
 void onEvent(WStype_t type, uint8_t *payload, size_t length)
 {
 	switch (type)
@@ -413,7 +485,7 @@ void setup()
 	buttons.add(BRIGHTNESS_DOWN_BUTTON, onBrightnessDown);
 	buttons.add(BRIGHTNESS_UP_BUTTON, onBrightnessUp);
 	buttons.add(POWER_BUTTON, onPower);
-	buttons.add(MODE_BUTTON, onMode);
+	buttons.add(MODE_BUTTON, onMode, onAnimation);
 	buttons.begin();
 
 	Serial.println(getSystemInfo());
@@ -466,7 +538,7 @@ void loop()
 		}
 		serverConnectionTries++;
 		Serial.printf("Trying to connect, attempt %i \n", serverConnectionTries);
-		ws.beginSSL(serverHost, 443, serverURL);
+		ws.beginSSL(serverHost, 443, serverURL + mapModes[currentMapMode]);
 	}
 	else if (!ws.isConnected())
 	{
