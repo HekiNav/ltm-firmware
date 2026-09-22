@@ -137,7 +137,7 @@
                 ]
             },
             {
-                "id": "locomotive_type",
+                "id": "loco",
                 "name": "Locomotive type",
                 "colors": [
                     [],
@@ -242,7 +242,7 @@
                 ]
             },
             {
-                "id": "locomotive_type",
+                "id": "loco",
                 "name": "Locomotive type",
                 "colors": [
                     [],

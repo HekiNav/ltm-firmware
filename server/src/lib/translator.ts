@@ -134,7 +134,7 @@ export class DataTranslator {
                     // no composition 
                     color = length == undefined ? 9 : colorTable.findIndex(([min, max]) => length >= Number(min) && length < Number(max))
                     break
-                case "locomotive_type":
+                case "loco":
                     const types = compositions?.getLocomotiveTypes(t.id)
                     color = colorTable.findIndex(c => c.some(l => types?.includes(String(l)))) || 10
                     if (!types) color = 9
