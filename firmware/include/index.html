@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rail Map Control Panel</title>
+    <style>
+        ::selection {
+            background-color: #09f;
+            color: #fff;
+        }
+
+        ::-moz-selection {
+            background-color: #09f;
+            color: #fff;
+        }
+
+        body {
+            background: #222;
+            color: #fff;
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: #333;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+            padding: 32px 24px;
+            max-width: 600px;
+            width: 90%;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        h1 {
+            color: #09f;
+            font-family: inherit;
+            margin-bottom: 16px;
+        }
+
+        button,
+        summary {
+            background-color: #09f;
+            border-radius: 12px;
+            border: 0;
+            padding: .5em;
+            font-size: 1em;
+            color: #fff;
+            box-shadow: 0 2px 6px rgba(0, 153, 255, 0.6);
+            font-family: inherit;
+            margin-bottom: 16px;
+            height: min-content;
+            margin-bottom: 0;
+        }
+
+        h2 {
+            color: #fff;
+            font-family: inherit;
+            font-weight: 600;
+            margin-top: 0;
+            display: flex;
+        }
+
+        h3 {
+            color: #fff;
+            font-family: inherit;
+            font-weight: 400;
+            margin-top: 0;
+            display: flex;
+        }
+
+        details {
+            display: flex;
+            justify-content: center;
+            font-size: .6em;
+            margin-left: 1em;
+            height: min-content;
+            position: relative;
+        }
+
+        details div {
+            margin-left: 1em;
+            position: absolute;
+            background: #222;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+            padding: 8px 8px;
+            width: max-content;
+            display: flex;
+            flex-direction: row;
+            z-index: 1000;
+            gap: .5em;
+            bottom: -8px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 18px 4px;
+            }
+
+            h1 {
+                font-size: 1.6em;
+            }
+
+            h2 {
+                font-size: 1.1em;
+            }
+
+            h3 {
+                font-size: .9em;
+            }
+
+            details div {
+                margin-top: 1em;
+                padding: 8px 8px;
+                width: min-content;
+                height: max-content;
+                flex-direction: column;
+                top: 2em;
+                right: 0;
+            }
+        }
+
+        .align-start {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            align-items: start;
+        }
+
+        details>summary {
+            list-style: none;
+        }
+
+        .legend-color {
+            height: 1em;
+            margin-left: auto;
+            display: block;
+            aspect-ratio: 1;
+        }
+
+        table {
+            border-spacing: .5em 0;
+        }
+
+        th {
+            text-align: start;
+        }
+
+        th div {
+            text-transform: capitalize;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Rail Map Control Panel</h1>
+        <div class="container" style="margin-top: 1em;">
+            <h1>Legend</h1>
+            <table>
+                <tbody id="legend">
+
+                </tbody>
+            </table>
+            <button id="refresh" onclick="getData()">Refresh</button>
+        </div>
+        <script>
+            //@ts-check
+            // temp for degugging outside firmware
+            const API_URL = "./"
+
+            const refreshButton = document.querySelector("#refresh")
+            const legend = document.querySelector("#legend")
+
+
+            const legends = {
+                fin: {
+                    100: {
+                        route: [
+                            { color: "#f00", line: "Tampere-Turku, Helsinki-Tampere, Helsinki-Kouvola, Oulu-Rovaniemi, Kuopio-Oulu, Seinäjoki-Ähtäri-(Jyväskylä)*, Seinäjoki-Vaasa" },
+                            { color: "#f80", line: "Helsinki-Kuopio, Helsinki-Imatra-(Joensuu), Helsinki-Vaasa, (Turku)-Tampere-Jyväskylä-(Kuopio), Seinäjoki-Oulu" },
+                            { color: "#ff0", line: "Helsinki-Kajaani, Helsinki-Pieksamäki, Tampere-Pori, Oulu-Haaparanta" },
+                            { color: "#0f0", line: "Helsinki-Turku, Helsinki-Rovaniemi" },
+                            { color: "#0ff", line: "Tampere-Keuruu*, Night trains" },
+                            { color: "#00f", line: "Helsinki-Oulu, Savonlinna-Parikkala*" },
+                            { color: "#80f", line: "Pieksamäki-Joensuu*, Helsinki-Jyväskylä, Helsinki-Kokkola" },
+                            { color: "#f0f", line: "Seinäjoki-Vaasa, Tampere-Jyväskylä, Tampere-Rauma (spring 2027)" },
+                            { color: "#f08", line: "Helsinki-Pori, Ylivieska-Iisalmi, Joensuu-Nurmes*" },
+                            { color: "#fff", line: "Other" }
+                        ],
+                        length: [
+                            { color: "#f00", line: "<50m" },
+                            { color: "#f80", line: "50m-100m" },
+                            { color: "#ff0", line: "100m-200m" },
+                            { color: "#0f0", line: "200m-300m" },
+                            { color: "#0ff", line: "300m-500m" },
+                            { color: "#00f", line: "500m-1000m" },
+                            { color: "#80f", line: ">1000m" },
+                            { color: "#f08", line: "Length not available" },
+                            { color: "#fff", line: "Other length" }
+                        ],
+                        loco: [
+                            { color: "#f00", line: "Sr1" },
+                            { color: "#f80", line: "Dm12" },
+                            { color: "#ff0", line: "Sr2" },
+                            { color: "#0f0", line: "Sr3" },
+                            { color: "#0ff", line: "Sm3" },
+                            { color: "#00f", line: "Sm6" },
+                            { color: "#80f", line: "Dr19" },
+                            { color: "#f08", line: "Locomotive not available" },
+                            { color: "#fff", line: "Other locomotive" }
+                        ]
+                    }
+                },
+                hki: {
+                    100: {
+                        lines: [
+                            { color: "#f00", line: "Z" },
+                            { color: "#f80", line: "A" },
+                            { color: "#ff0", line: "E, O" },
+                            { color: "#0f0", line: "P, G" },
+                            { color: "#0ff", line: "I, M" },
+                            { color: "#00f", line: "K" },
+                            { color: "#80f", line: "Y, L, H, X" },
+                            { color: "#f0f", line: "U" },
+                            { color: "#f08", line: "D, T, R" },
+                            { color: "#fff", line: "V" }
+                        ],
+                        length: [
+                            { color: "#f00", line: "<50m" },
+                            { color: "#f80", line: "50m-100m" },
+                            { color: "#ff0", line: "100m-200m" },
+                            { color: "#0f0", line: "200m-300m" },
+                            { color: "#0ff", line: "300m-500m" },
+                            { color: "#00f", line: "500m-1000m" },
+                            { color: "#80f", line: ">1000m" },
+                            { color: "#f08", line: "Length not available" },
+                            { color: "#fff", line: "Other length" }
+                        ],
+                        loco: [
+                            { color: "#f00", line: "Sm2" },
+                            { color: "#f80", line: "Sr1, Sr2, Sr3, Sm3 (InterCity locomotives)" },
+                            { color: "#0f0", line: "Sm4" },
+                            { color: "#00f", line: "Sm7" },
+                            { color: "#80f", line: "Sm5" },
+                            { color: "#f08", line: "Locomotive not available" },
+                            { color: "#fff", line: "Other locomotive" }
+                        ]
+                    }
+                }
+            }
+
+            /**
+             * @type {{
+             * mode?: number,
+             * brightness?: number,
+             * dir_ind?: number
+             * }} changes
+             */
+            async function getData() {
+                if (refreshButton) refreshButton.innerHTML = "Loading..."
+                const response = await fetch(`${API_URL}get_data/`)
+                const data = await response.json()
+                if (refreshButton) refreshButton.innerHTML = "Refresh"
+                parseData(data)
+            }
+            /**
+             * @typedef {{
+             *  mode: string,
+             *  board: string,
+             *  version: string,
+             * }} APIData
+             * @param {APIData} data
+             */
+            function parseData(data) {
+                if (legend) {
+                    legend.innerHTML = ""
+                    const table = legends[data.board][data.version][data.mode]
+                    if (!table) return
+                    const keys = Object.keys(table[0])
+                    legend.innerHTML += `<tr>${keys.reduce((p, k) => `${p}<th><div>${k}</div></th>`, "")}</tr>`
+                    table.forEach(r => {
+                        const { color, ...otherData } = r
+                        const values = Object.values(otherData)
+                        console.log(values)
+                        legend.innerHTML += `<tr><td><span class="legend-color" style="background-color: ${color}"></span></td>${values.reduce((p, r) => `${p}<td>${r}</td>`, "")}</tr>`
+                    })
+                }
+
+            }
+
+            getData()
+        </script>
+</body>
+
+</html>

@@ -9,6 +9,20 @@
 #include <vector>
 #include <map>
 
+#if defined(HKI_LTM)
+String mapModes[] =
+	{
+		"lines", "length", "loco"};
+#elif defined(FIN_LTM)
+String mapModes[] =
+	{
+		"route", "length", "loco"};
+#else
+String mapModes[] =
+	{
+		"null"};
+#endif
+
 #include "WiFiConfig.h"
 
 #include "brightness.h"
@@ -35,20 +49,7 @@ bool animating = false;
 CRGB black = CRGB::Black;
 std::vector<CRGB> colorTable;
 
-#if defined(HKI_LTM)
-String mapModes[] =
-	{
-		"lines", "length", "locomotive_type"};
-#elif defined(FIN_LTM)
-String mapModes[] =
-	{
-		"route", "length", "locomotive_type"};
-#else
-String mapModes[] =
-	{
-		"null"};
-#endif
-int16_t currentMapMode = 0;
+int8_t currentMapMode = 0;
 
 String serverURL = String("/?board_id=") + CITY_CODE + "-ltm&version=" + BACKEND_VERSION + "&mode_id=";
 String serverHost = "ltm-api-v2.hekinav.dev";
@@ -501,7 +502,7 @@ void setup()
 	// --- WiFi Setup ---
 	xTaskCreate(statusLedManagerTask, "Status LED Manager", 1024, NULL, 2, &statusLedTaskHandle);
 
-	if (WiFiImprovSetup())
+	if (WiFiImprovSetup(&currentMapMode))
 	{
 		Serial.println("WiFi credentials found...");
 		setStatusLedState(WIFI_LED_PIN, LED_BLINK_GREEN_FAST);
@@ -523,7 +524,7 @@ void loop()
 		manageWiFiConnection();
 		if (brightness.isOn())
 		{
-			if (millis() > 60 * 1000)
+			if (millis() > 10 * 1000)
 			{
 				setStatusLedState(WIFI_LED_PIN, LED_ON_RED, SERVER_LED_PIN, LED_OFF);
 			}
